@@ -1026,19 +1026,22 @@ function renderHammerKnockoutSection() {
           </div>
 
           <!-- Sledgehammer Graphic (Animates on swing) -->
-          <div id="sledgehammer-graphic" class="absolute -top-2 right-6 sm:right-12 z-20 pointer-events-none transition-transform duration-200" style="transform-origin: top right;">
-            <svg class="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-2xl text-love-gold" viewBox="0 0 100 100" fill="none">
-              <!-- Handle -->
+          <div id="sledgehammer-graphic" class="absolute -top-4 z-30 pointer-events-none transition-all duration-300" style="transform-origin: 75% 85%; right: 10%;">
+            <svg class="w-24 h-24 sm:w-32 sm:h-32 drop-shadow-2xl text-love-gold" viewBox="0 0 100 100" fill="none">
+              <!-- Wooden Handle -->
               <rect x="68" y="22" width="8" height="65" rx="3" fill="#8B5A2B" transform="rotate(35 68 22)"/>
               <rect x="70" y="24" width="3" height="61" fill="#A76D38" transform="rotate(35 68 22)"/>
               <rect x="42" y="65" width="9" height="20" rx="2" fill="#2A1B0E" transform="rotate(35 68 22)"/>
-              <!-- Sledge Hammer Head -->
+              <!-- Sledge Hammer Forged Steel Head -->
               <rect x="22" y="14" width="36" height="20" rx="3" fill="#D6A43A" stroke="#000" stroke-width="2"/>
               <rect x="18" y="16" width="6" height="16" rx="2" fill="#171717"/>
               <rect x="56" y="16" width="6" height="16" rx="2" fill="#171717"/>
-              <path d="M26 18H54" stroke="#FFF" stroke-width="1.5" opacity="0.6"/>
+              <path d="M26 18H54" stroke="#FFF" stroke-width="1.5" opacity="0.7"/>
             </svg>
           </div>
+
+          <!-- Debris & Shockwave Particle FX Container -->
+          <div id="strike-fx-container" class="absolute inset-0 pointer-events-none z-30 overflow-hidden"></div>
 
           <!-- Impact Spark Text Feedback -->
           <div id="impact-feedback" class="absolute top-12 left-1/2 -translate-x-1/2 z-30 font-mono text-xs sm:text-sm font-black px-4 py-1.5 bg-black/85 text-love-gold border border-love-gold rounded-full shadow-2xl transition-all opacity-0 pointer-events-none">
@@ -1191,6 +1194,8 @@ function renderPaintRollerSection() {
           <div class="absolute inset-y-0 left-0 overflow-hidden shadow-2xl transition-all" id="painted-layer" style="width: 50%; background-color: #C25E38;">
             <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
             <div class="absolute inset-0 paint-wet-sheen"></div>
+            <!-- Wet Paint Glint Shimmer Sweep -->
+            <div class="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-wet-glint pointer-events-none"></div>
             
             <div class="absolute inset-0 flex items-center justify-start p-8 md:p-12">
               <div class="max-w-md text-white drop-shadow-md">
@@ -1210,6 +1215,9 @@ function renderPaintRollerSection() {
               ✓ FRESH SILKY SATIN COAT
             </span>
           </div>
+
+          <!-- Dynamic Paint Drips Along the Seam -->
+          <div id="paint-drips-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
 
           <!-- Paint Roller Draggable Tool on the Seam -->
           <div class="absolute top-0 bottom-0 z-20 flex flex-col items-center justify-center pointer-events-none" id="paint-roller-handle" style="left: 50%; transform: translateX(-50%);">
@@ -1464,15 +1472,15 @@ function renderHomePage() {
             <!-- Live Credibility Metrics -->
             <div class="mt-14 pt-8 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-6">
               <div>
-                <span class="block font-display text-3xl font-extrabold text-love-gold">120+</span>
+                <span class="block font-display text-3xl font-extrabold text-love-gold count-up-stat" data-target="120" data-suffix="+">120+</span>
                 <span class="text-xs uppercase tracking-wider text-neutral-400 mt-1 block font-semibold">Projects Built</span>
               </div>
               <div>
-                <span class="block font-display text-3xl font-extrabold text-white">12</span>
+                <span class="block font-display text-3xl font-extrabold text-white count-up-stat" data-target="12" data-suffix="">12</span>
                 <span class="text-xs uppercase tracking-wider text-neutral-400 mt-1 block font-semibold">Specialist Trades</span>
               </div>
               <div>
-                <span class="block font-display text-3xl font-extrabold text-love-gold">100%</span>
+                <span class="block font-display text-3xl font-extrabold text-love-gold count-up-stat" data-target="100" data-suffix="%">100%</span>
                 <span class="text-xs uppercase tracking-wider text-neutral-400 mt-1 block font-semibold">SABS Compliance</span>
               </div>
               <div>
@@ -1527,9 +1535,10 @@ function renderHomePage() {
             </div>
           </div>
 
-          <!-- Hero Image with Organic Rounded Border -->
+          <!-- Hero Image with Organic Rounded Border & Morphing Background -->
           <div class="relative">
-            <div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-[#DCD4C4] border-8 border-white">
+            <div class="absolute -inset-4 bg-[#E0D2C0]/80 filter blur-2xl animate-organic-morph -z-10"></div>
+            <div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl bg-[#DCD4C4] border-8 border-white transition-transform duration-500 hover:scale-[1.01]">
               <img src="${photo(imageFiles[32])}" alt="Warm residential home built by Love Construction" class="w-full h-full object-cover" fetchpriority="high">
             </div>
             <div class="absolute -bottom-6 -left-6 bg-white p-5 rounded-2xl shadow-xl border border-[#261E1A]/10 max-w-xs">
@@ -2347,12 +2356,51 @@ function initSite() {
   wireEnquiryForm();
   wireLightbox();
   wireBlueprintToggle();
+  wireAnimatedCounters();
   if (designId === 'design-1') wireHammerKnockout();
   if (designId === 'design-2') wirePaintRoller();
   if (designId === 'design-3') wirePlumbingPipes();
 }
 
 // --- 25. INTERACTIONS & EVENT LISTENERS ---
+
+// 0. Animated Stat Number Counters
+function wireAnimatedCounters() {
+  const statEls = document.querySelectorAll('.count-up-stat');
+  if (!statEls.length) return;
+
+  let hasRun = false;
+  const animateCounters = () => {
+    if (hasRun) return;
+    hasRun = true;
+    statEls.forEach(el => {
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.dataset.suffix || '';
+      let current = 0;
+      const step = Math.max(1, Math.floor(target / 45));
+      const interval = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          current = target;
+          clearInterval(interval);
+        }
+        el.textContent = `${current}${suffix}`;
+      }, 25);
+    });
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        animateCounters();
+        observer.disconnect();
+      }
+    }, { threshold: 0.2 });
+    observer.observe(statEls[0]);
+  } else {
+    animateCounters();
+  }
+}
 
 // A. Mobile Navigation Drawer
 function wireNavigation() {
@@ -2674,11 +2722,12 @@ function wireBlueprintToggle() {
   });
 }
 
-// H. Design 1: Sledgehammer Demolition & Post Knockout Wiring
+// H. Design 1: Sledgehammer Demolition & Post Knockout Wiring (Advanced Physics & Target Animation)
 function wireHammerKnockout() {
   const posts = document.querySelectorAll('.knock-post');
   const hammer = document.querySelector('#sledgehammer-graphic');
   const arena = document.querySelector('#demolition-arena');
+  const fxContainer = document.querySelector('#strike-fx-container');
   const countEl = document.querySelector('#knock-count');
   const percentEl = document.querySelector('#knock-percent');
   const feedbackEl = document.querySelector('#impact-feedback');
@@ -2697,8 +2746,10 @@ function wireHammerKnockout() {
     if (countEl) countEl.textContent = String(knockedCount);
     if (percentEl) percentEl.textContent = `${Math.round((knockedCount / 3) * 100)}%`;
     if (knockedCount >= 3) {
-      if (completeBanner) completeBanner.style.display = 'flex';
-      if (postsContainer) postsContainer.style.opacity = '0.15';
+      setTimeout(() => {
+        if (completeBanner) completeBanner.style.display = 'flex';
+        if (postsContainer) postsContainer.style.opacity = '0.12';
+      }, 500);
     }
   };
 
@@ -2706,53 +2757,109 @@ function wireHammerKnockout() {
     if (!feedbackEl) return;
     feedbackEl.textContent = msg;
     feedbackEl.style.opacity = '1';
-    feedbackEl.style.transform = 'translate(-50%, -10px) scale(1.1)';
+    feedbackEl.style.transform = 'translate(-50%, -15px) scale(1.15)';
     setTimeout(() => {
       feedbackEl.style.opacity = '0';
       feedbackEl.style.transform = 'translate(-50%, 0) scale(1)';
-    }, 450);
+    }, 550);
+  };
+
+  // Explosive Particle & Shockwave Generation
+  const spawnExplosionFX = (targetX, targetY) => {
+    if (!fxContainer) return;
+
+    // 1. Expanding Shockwave Ring
+    const shockwave = document.createElement('div');
+    shockwave.className = 'animate-shockwave border-love-gold/80';
+    shockwave.style.left = `${targetX}px`;
+    shockwave.style.top = `${targetY}px`;
+    shockwave.style.width = '80px';
+    shockwave.style.height = '80px';
+    fxContainer.appendChild(shockwave);
+    setTimeout(() => shockwave.remove(), 600);
+
+    // 2. Flying Debris Particles (Bricks, Mortar & Sparks)
+    const colors = ['#D6A43A', '#F59E0B', '#A76D38', '#555555', '#222222', '#FFFFFF'];
+    for (let i = 0; i < 14; i++) {
+      const p = document.createElement('div');
+      p.className = 'debris-particle rounded-sm';
+      const size = Math.floor(Math.random() * 8) + 4;
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      p.style.left = `${targetX}px`;
+      p.style.top = `${targetY}px`;
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * 120 + 40;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist - 25; // gravity arc
+      const rot = Math.random() * 720 - 360;
+
+      p.style.setProperty('--dx', `${dx}px`);
+      p.style.setProperty('--dy', `${dy}px`);
+      p.style.setProperty('--rot', `${rot}deg`);
+
+      fxContainer.appendChild(p);
+      setTimeout(() => p.remove(), 700);
+    }
   };
 
   const strikePost = (postEl, index) => {
     if (postHps[index] <= 0) return;
 
-    // Sledgehammer swing animation
+    const arenaRect = arena.getBoundingClientRect();
+    const postRect = postEl.getBoundingClientRect();
+
+    // Calculate post top center relative to arena
+    const targetX = (postRect.left + postRect.width / 2) - arenaRect.left;
+    const targetY = postRect.top - arenaRect.top;
+
+    // Glide sledgehammer directly above targeted post
     if (hammer) {
-      hammer.classList.remove('animate-hammer-strike');
+      hammer.style.right = 'auto';
+      hammer.style.left = `${targetX - 30}px`;
+      hammer.style.top = `${Math.max(10, targetY - 60)}px`;
+      hammer.classList.remove('animate-heavy-smash', 'animate-hammer-strike');
       void hammer.offsetWidth;
-      hammer.classList.add('animate-hammer-strike');
+      hammer.classList.add('animate-heavy-smash');
     }
 
-    // Screen shake
-    arena.classList.remove('animate-screen-shake');
-    void arena.offsetWidth;
-    arena.classList.add('animate-screen-shake');
+    // Impact timing after back-swing
+    setTimeout(() => {
+      // Screen shake
+      arena.classList.remove('animate-screen-shake');
+      void arena.offsetWidth;
+      arena.classList.add('animate-screen-shake');
 
-    postHps[index] -= 50;
+      // Explosion Sparks & Shockwave at contact point
+      spawnExplosionFX(targetX, targetY + 30);
 
-    const hpBar = postEl.querySelector('.post-hp-bar');
-    const hpText = postEl.querySelector('.post-hp-text');
-    const cracks = postEl.querySelector('.post-cracks');
+      postHps[index] -= 50;
 
-    if (hpBar) hpBar.style.width = `${postHps[index]}%`;
-    if (hpText) hpText.textContent = `${postHps[index]}% HP`;
+      const hpBar = postEl.querySelector('.post-hp-bar');
+      const hpText = postEl.querySelector('.post-hp-text');
+      const cracks = postEl.querySelector('.post-cracks');
 
-    if (postHps[index] === 50) {
-      showImpactSpark('💥 CRACK! -50% INTEGRITY');
-      if (cracks) cracks.style.opacity = '1';
-      postEl.style.transform = 'scale(0.98)';
-    } else if (postHps[index] <= 0) {
-      showImpactSpark('💥 DEMOLISHED! POST CRUMBLED');
-      knockedCount++;
-      postEl.style.transform = 'translateY(60px) scale(0.8)';
-      postEl.style.opacity = '0';
-      postEl.style.pointerEvents = 'none';
-      if (hpText) {
-        hpText.textContent = '0% KNOCKED';
-        hpText.className = 'post-hp-text text-red-500 font-bold';
+      if (hpBar) hpBar.style.width = `${postHps[index]}%`;
+      if (hpText) hpText.textContent = `${postHps[index]}% HP`;
+
+      if (postHps[index] === 50) {
+        showImpactSpark('💥 HEAVY STRIKE! -50% CRACK');
+        if (cracks) cracks.style.opacity = '1';
+        postEl.style.transform = 'scale(0.96) rotate(-1.5deg)';
+      } else if (postHps[index] <= 0) {
+        showImpactSpark('💥 DEMOLISHED! WALL SHATTERED');
+        knockedCount++;
+        postEl.classList.add('animate-post-crumble');
+        postEl.style.pointerEvents = 'none';
+        if (hpText) {
+          hpText.textContent = '0% KNOCKED';
+          hpText.className = 'post-hp-text text-red-500 font-bold';
+        }
+        updateProgress();
       }
-      updateProgress();
-    }
+    }, 180);
   };
 
   posts.forEach((post, idx) => {
@@ -2767,7 +2874,7 @@ function wireHammerKnockout() {
       if (targetIdx !== -1) {
         strikePost(posts[targetIdx], targetIdx);
       } else {
-        showImpactSpark('ALL POSTS ALREADY DEMOLISHED!');
+        showImpactSpark('ALL POSTS DEMOLISHED · FOUNDATION READY');
       }
     });
   }
@@ -2778,7 +2885,15 @@ function wireHammerKnockout() {
     if (completeBanner) completeBanner.style.display = 'none';
     if (postsContainer) postsContainer.style.opacity = '1';
 
+    if (hammer) {
+      hammer.style.left = 'auto';
+      hammer.style.right = '10%';
+      hammer.style.top = '-16px';
+      hammer.classList.remove('animate-heavy-smash');
+    }
+
     posts.forEach(post => {
+      post.classList.remove('animate-post-crumble');
       post.style.transform = '';
       post.style.opacity = '1';
       post.style.pointerEvents = 'auto';
@@ -2794,19 +2909,20 @@ function wireHammerKnockout() {
     });
 
     updateProgress();
-    showImpactSpark('POSTS REBUILT · READY TO DEMOLISH');
+    showImpactSpark('POSTS REBUILT · READY TO STRIKE');
   };
 
   if (resetBtn) resetBtn.addEventListener('click', resetAllPosts);
   if (rebuildBtn) rebuildBtn.addEventListener('click', resetAllPosts);
 }
 
-// I. Design 2: Artisan Paint Roller Wiring
+// I. Design 2: Artisan Paint Roller Wiring (Fluid Texture & Scroll Paint Mechanics)
 function wirePaintRoller() {
   const container = document.querySelector('#paint-wall-container');
   const layer = document.querySelector('#painted-layer');
   const roller = document.querySelector('#paint-roller-handle');
   const sleeve = document.querySelector('#physical-roller-sleeve');
+  const dripsContainer = document.querySelector('#paint-drips-container');
   const swatchBtns = document.querySelectorAll('.paint-swatch-btn');
   const activeSwatchName = document.querySelector('#active-swatch-name');
   const coverageVal = document.querySelector('#paint-coverage-val');
@@ -2818,6 +2934,20 @@ function wirePaintRoller() {
   let isPainting = false;
   let currentColor = '#C25E38';
   let currentName = 'Cape Terracotta';
+  let lastX = 0;
+
+  // Spawn wet paint drip along the vertical seam
+  const spawnPaintDrip = (posX) => {
+    if (!dripsContainer || Math.random() > 0.3) return;
+    const drip = document.createElement('div');
+    drip.className = 'animate-paint-drip rounded-full absolute';
+    drip.style.left = `${posX}px`;
+    drip.style.top = `${Math.random() * 80 + 10}%`;
+    drip.style.width = '4px';
+    drip.style.backgroundColor = currentColor;
+    dripsContainer.appendChild(drip);
+    setTimeout(() => drip.remove(), 1400);
+  };
 
   const updateRoller = (clientX) => {
     const rect = container.getBoundingClientRect();
@@ -2829,6 +2959,20 @@ function wirePaintRoller() {
     layer.style.width = `${percentage}%`;
     roller.style.left = `${percentage}%`;
     if (coverageVal) coverageVal.textContent = `${percentage}%`;
+
+    // Spin roller sleeve during motion
+    if (sleeve) {
+      sleeve.classList.add('animate-roller-spinning');
+      clearTimeout(sleeve.spinTimer);
+      sleeve.spinTimer = setTimeout(() => {
+        sleeve.classList.remove('animate-roller-spinning');
+      }, 150);
+    }
+
+    if (Math.abs(posX - lastX) > 15) {
+      spawnPaintDrip(posX);
+      lastX = posX;
+    }
   };
 
   container.addEventListener('mousedown', (e) => {
@@ -2840,7 +2984,7 @@ function wirePaintRoller() {
     if (isPainting) updateRoller(e.clientX);
   });
 
-  // Touch on mobile
+  // Touch on mobile devices
   container.addEventListener('touchstart', (e) => {
     isPainting = true;
     updateRoller(e.touches[0].clientX);
@@ -2865,17 +3009,24 @@ function wirePaintRoller() {
     });
   });
 
-  // Auto Paint Animation
+  // Smooth Auto Paint Animation
   if (autoPaintBtn) {
     autoPaintBtn.addEventListener('click', () => {
       let cur = parseFloat(layer.style.width) || 50;
+      if (sleeve) sleeve.classList.add('animate-roller-spinning');
       const step = () => {
         if (cur < 100) {
-          cur += 2;
+          cur += 1.8;
           layer.style.width = `${cur}%`;
           roller.style.left = `${cur}%`;
           if (coverageVal) coverageVal.textContent = `${Math.min(100, Math.round(cur))}%`;
+          if (Math.random() > 0.4) {
+            const rect = container.getBoundingClientRect();
+            spawnPaintDrip((cur / 100) * rect.width);
+          }
           requestAnimationFrame(step);
+        } else {
+          if (sleeve) sleeve.classList.remove('animate-roller-spinning');
         }
       };
       step();
@@ -2889,6 +3040,31 @@ function wirePaintRoller() {
       roller.style.left = '15%';
       if (coverageVal) coverageVal.textContent = '15%';
     });
+  }
+
+  // Scroll-Driven Paint Reveal (Auto-rolls softly into view as user scrolls past)
+  let hasScrollTriggered = false;
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !hasScrollTriggered) {
+          hasScrollTriggered = true;
+          let current = 20;
+          const target = 55;
+          const scrollRoll = () => {
+            if (current < target) {
+              current += 1.2;
+              layer.style.width = `${current}%`;
+              roller.style.left = `${current}%`;
+              if (coverageVal) coverageVal.textContent = `${Math.round(current)}%`;
+              requestAnimationFrame(scrollRoll);
+            }
+          };
+          setTimeout(scrollRoll, 300);
+        }
+      });
+    }, { threshold: 0.35 });
+    observer.observe(container);
   }
 }
 
