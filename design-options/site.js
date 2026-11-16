@@ -960,6 +960,471 @@ function renderEstimatorWidget() {
   `;
 }
 
+// --- 12B. DESIGN 1 SPECIAL: SLEDGEHAMMER DEMOLITION & POST KNOCKOUT ---
+function renderHammerKnockoutSection() {
+  return `
+    <section class="py-16 md:py-24 px-5 md:px-10 bg-[#0c0e12] text-white border-y border-love-gold/25 overflow-hidden relative" id="demolition-section">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-love-gold/15 border border-love-gold/40 rounded-full text-[10px] font-bold text-love-gold uppercase tracking-[.25em] mb-3">
+              <span class="w-2 h-2 rounded-full bg-love-gold animate-ping"></span>
+              Interactive Construction Experience · Structural Demolition
+            </div>
+            <h2 class="font-display text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              Demolition & <span class="text-love-gold">Structural Post Knockout.</span>
+            </h2>
+            <p class="mt-3 text-sm md:text-base text-neutral-300 leading-relaxed max-w-2xl">
+              Before LOVE CONSTRUCTION casts reinforced foundations, old compromised posts must be cleared. Click or tap any post to swing the sledgehammer, shatter the brickwork, and reveal the golden villa underneath!
+            </p>
+          </div>
+
+          <!-- Live Demolition Progress Readout -->
+          <div class="p-4 bg-[#181a20] border border-love-gold/30 rounded-xl flex items-center gap-5 shrink-0 shadow-lg">
+            <div>
+              <span class="text-[10px] uppercase font-bold text-neutral-400 block font-mono">SITE CLEARANCE</span>
+              <strong class="text-2xl font-black text-love-gold font-mono" id="knock-percent">0%</strong>
+            </div>
+            <div class="h-8 w-px bg-white/20"></div>
+            <div>
+              <span class="text-[10px] uppercase font-bold text-neutral-400 block font-mono">POSTS KNOCKED</span>
+              <strong class="text-xl font-bold text-white font-mono"><span id="knock-count">0</span> / 3</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Knockout Arena -->
+        <div class="relative bg-neutral-950 border-2 border-white/20 rounded-2xl overflow-hidden p-6 sm:p-10 shadow-2xl transition-transform" id="demolition-arena">
+          
+          <!-- Caution Perimeter Banner -->
+          <div class="absolute top-0 inset-x-0 h-2.5 bg-[repeating-linear-gradient(45deg,#f59e0b,#f59e0b_12px,#121316_12px,#121316_24px)] opacity-80"></div>
+          
+          <!-- Hidden Revealed Villa (Underneath) -->
+          <div class="absolute inset-0 z-0 overflow-hidden">
+            <img src="${photo(imageFiles[32])}" alt="Revealed Luxury Villa" class="w-full h-full object-cover opacity-85">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/70"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center" id="demolition-complete-banner" style="display:none;">
+              <span class="px-4 py-1.5 bg-love-gold text-black font-extrabold text-xs uppercase tracking-widest rounded-full mb-3 shadow-glow-gold">
+                🎉 SITE 100% CLEARED & READY
+              </span>
+              <h3 class="font-display text-2xl sm:text-4xl font-black text-white leading-tight max-w-xl">
+                Ready for SABS 30MPa Reinforced Concrete Foundations!
+              </h3>
+              <p class="text-xs sm:text-sm text-neutral-200 mt-2 max-w-md">
+                All structural obstructions removed. Love Construction is ready to begin your luxury turnkey build.
+              </p>
+              <div class="mt-6 flex flex-wrap gap-3 justify-center">
+                <a href="contact.html" class="px-6 py-3.5 bg-love-gold hover:bg-amber-400 text-black font-extrabold text-xs uppercase tracking-wider rounded-lg shadow-glow-gold transition">
+                  Request Foundation & Build Quote ↗
+                </a>
+                <button type="button" id="reset-posts-btn" class="px-5 py-3.5 bg-white/20 hover:bg-white/30 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition">
+                  Rebuild Posts & Strike Again
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sledgehammer Graphic (Animates on swing) -->
+          <div id="sledgehammer-graphic" class="absolute -top-2 right-6 sm:right-12 z-20 pointer-events-none transition-transform duration-200" style="transform-origin: top right;">
+            <svg class="w-20 h-20 sm:w-28 sm:h-28 drop-shadow-2xl text-love-gold" viewBox="0 0 100 100" fill="none">
+              <!-- Handle -->
+              <rect x="68" y="22" width="8" height="65" rx="3" fill="#8B5A2B" transform="rotate(35 68 22)"/>
+              <rect x="70" y="24" width="3" height="61" fill="#A76D38" transform="rotate(35 68 22)"/>
+              <rect x="42" y="65" width="9" height="20" rx="2" fill="#2A1B0E" transform="rotate(35 68 22)"/>
+              <!-- Sledge Hammer Head -->
+              <rect x="22" y="14" width="36" height="20" rx="3" fill="#D6A43A" stroke="#000" stroke-width="2"/>
+              <rect x="18" y="16" width="6" height="16" rx="2" fill="#171717"/>
+              <rect x="56" y="16" width="6" height="16" rx="2" fill="#171717"/>
+              <path d="M26 18H54" stroke="#FFF" stroke-width="1.5" opacity="0.6"/>
+            </svg>
+          </div>
+
+          <!-- Impact Spark Text Feedback -->
+          <div id="impact-feedback" class="absolute top-12 left-1/2 -translate-x-1/2 z-30 font-mono text-xs sm:text-sm font-black px-4 py-1.5 bg-black/85 text-love-gold border border-love-gold rounded-full shadow-2xl transition-all opacity-0 pointer-events-none">
+            💥 DIRECT STRIKE!
+          </div>
+
+          <!-- 3 Structural Pillar Posts to Knock Out -->
+          <div class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-6 pt-10 pb-6" id="posts-container">
+            
+            <!-- Post 1 -->
+            <div class="knock-post group cursor-pointer p-5 bg-[#1b1e26]/95 border-2 border-amber-600/40 rounded-xl shadow-2xl transition-all duration-300 hover:border-love-gold hover:scale-[1.02] text-center" data-post-index="0" data-hits="0">
+              <div class="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1 flex items-center justify-between">
+                <span>PILLAR 01</span>
+                <span class="post-hp-text text-amber-400 font-bold">100% HP</span>
+              </div>
+              <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden mb-4 border border-white/10">
+                <div class="post-hp-bar bg-amber-500 h-full w-full transition-all duration-200"></div>
+              </div>
+              <!-- Post Graphic with Cracks -->
+              <div class="relative aspect-[3/4] bg-neutral-900 rounded-lg overflow-hidden border border-white/10 flex items-center justify-center p-4">
+                <img src="${photo(imageFiles[3])}" alt="Structural masonry pillar" class="absolute inset-0 w-full h-full object-cover opacity-75">
+                <div class="absolute inset-0 bg-black/40"></div>
+                <!-- SVG Fracture Overlay -->
+                <svg class="post-cracks absolute inset-0 w-full h-full text-amber-400 opacity-0 transition-opacity pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M50 0 L45 35 L60 55 L35 75 L45 100 M45 35 L20 40 M60 55 L85 65"/>
+                </svg>
+                <div class="relative z-10 text-center">
+                  <span class="text-3xl block mb-1">🧱</span>
+                  <strong class="text-xs font-bold text-white uppercase block">Reinforced Brick Pier</strong>
+                  <span class="text-[10px] text-neutral-400 mt-1 block">Tap to Strike</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="knock-post group cursor-pointer p-5 bg-[#1b1e26]/95 border-2 border-amber-600/40 rounded-xl shadow-2xl transition-all duration-300 hover:border-love-gold hover:scale-[1.02] text-center" data-post-index="1" data-hits="0">
+              <div class="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1 flex items-center justify-between">
+                <span>PILLAR 02</span>
+                <span class="post-hp-text text-amber-400 font-bold">100% HP</span>
+              </div>
+              <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden mb-4 border border-white/10">
+                <div class="post-hp-bar bg-amber-500 h-full w-full transition-all duration-200"></div>
+              </div>
+              <!-- Post Graphic with Cracks -->
+              <div class="relative aspect-[3/4] bg-neutral-900 rounded-lg overflow-hidden border border-white/10 flex items-center justify-center p-4">
+                <img src="${photo(imageFiles[19])}" alt="Corner masonry post" class="absolute inset-0 w-full h-full object-cover opacity-75">
+                <div class="absolute inset-0 bg-black/40"></div>
+                <svg class="post-cracks absolute inset-0 w-full h-full text-amber-400 opacity-0 transition-opacity pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M50 0 L55 30 L35 50 L65 70 L50 100 M55 30 L80 35 M35 50 L15 60"/>
+                </svg>
+                <div class="relative z-10 text-center">
+                  <span class="text-3xl block mb-1">🏗️</span>
+                  <strong class="text-xs font-bold text-white uppercase block">Concrete Corner Post</strong>
+                  <span class="text-[10px] text-neutral-400 mt-1 block">Tap to Strike</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Post 3 -->
+            <div class="knock-post group cursor-pointer p-5 bg-[#1b1e26]/95 border-2 border-amber-600/40 rounded-xl shadow-2xl transition-all duration-300 hover:border-love-gold hover:scale-[1.02] text-center" data-post-index="2" data-hits="0">
+              <div class="text-[10px] font-mono uppercase tracking-widest text-neutral-400 mb-1 flex items-center justify-between">
+                <span>PILLAR 03</span>
+                <span class="post-hp-text text-amber-400 font-bold">100% HP</span>
+              </div>
+              <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden mb-4 border border-white/10">
+                <div class="post-hp-bar bg-amber-500 h-full w-full transition-all duration-200"></div>
+              </div>
+              <!-- Post Graphic with Cracks -->
+              <div class="relative aspect-[3/4] bg-neutral-900 rounded-lg overflow-hidden border border-white/10 flex items-center justify-center p-4">
+                <img src="${photo(imageFiles[0])}" alt="Weathered trench pier" class="absolute inset-0 w-full h-full object-cover opacity-75">
+                <div class="absolute inset-0 bg-black/40"></div>
+                <svg class="post-cracks absolute inset-0 w-full h-full text-amber-400 opacity-0 transition-opacity pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M50 0 L40 40 L65 60 L45 80 L55 100 M40 40 L15 45 M65 60 L90 70"/>
+                </svg>
+                <div class="relative z-10 text-center">
+                  <span class="text-3xl block mb-1">🔨</span>
+                  <strong class="text-xs font-bold text-white uppercase block">Weathered Boundary Wall</strong>
+                  <span class="text-[10px] text-neutral-400 mt-1 block">Tap to Strike</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Control Bar -->
+          <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
+            <div class="flex items-center gap-2 text-xs text-neutral-400">
+              <span>💡</span> <span>Click posts directly or press button to strike with the sledgehammer</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" id="swing-hammer-btn" class="px-6 py-3 bg-love-gold hover:bg-amber-400 text-black font-extrabold text-xs uppercase tracking-wider rounded-lg shadow-glow-gold flex items-center gap-2 transition active:scale-95">
+                <span>🔨 Swing Sledgehammer</span>
+              </button>
+              <button type="button" id="rebuild-btn" class="px-4 py-3 border border-white/20 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition">
+                Reset Posts
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
+// --- 12C. DESIGN 2 SPECIAL: ARTISAN PAINT ROLLER & WALL TRANSFORMATION ---
+function renderPaintRollerSection() {
+  return `
+    <section class="py-16 md:py-24 px-5 md:px-10 bg-[#FAF6EE] text-[#261E1A] border-y border-[#261E1A]/10 overflow-hidden" id="paint-roller-section">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.25em] text-love-clay mb-3">
+              <span class="w-6 h-px bg-love-clay"></span>
+              Interactive Craftsmanship · Surface Finishing
+            </div>
+            <h2 class="font-editorial text-3xl md:text-5xl text-[#261E1A] leading-tight">
+              The Artisan Paint Roller & <em class="text-love-clay">Fresh Coat Reveal.</em>
+            </h2>
+            <p class="mt-3 text-sm md:text-base text-[#5C4F46] leading-relaxed max-w-2xl">
+              Witness the tactile transformation of raw, weathered plaster into a velvety smooth finish. Pick a handcrafted paint swatch below and drag the roller handle across the wall!
+            </p>
+          </div>
+
+          <!-- Color Swatch Selector -->
+          <div class="p-3 bg-[#EFE8DA] rounded-2xl flex items-center gap-2 shrink-0 border border-[#261E1A]/10">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[#6B5E55] mr-2">Color:</span>
+            <button type="button" class="paint-swatch-btn w-8 h-8 rounded-full border-2 border-white shadow-md transition transform hover:scale-110 active-swatch ring-2 ring-love-clay" data-color="#C25E38" data-name="Cape Terracotta" style="background-color: #C25E38;" title="Cape Terracotta"></button>
+            <button type="button" class="paint-swatch-btn w-8 h-8 rounded-full border-2 border-white shadow-md transition transform hover:scale-110" data-color="#E5D9C5" data-name="Winelands Linen" style="background-color: #E5D9C5;" title="Winelands Linen"></button>
+            <button type="button" class="paint-swatch-btn w-8 h-8 rounded-full border-2 border-white shadow-md transition transform hover:scale-110" data-color="#4D6A56" data-name="Heritage Sage" style="background-color: #4D6A56;" title="Heritage Sage"></button>
+            <button type="button" class="paint-swatch-btn w-8 h-8 rounded-full border-2 border-white shadow-md transition transform hover:scale-110" data-color="#C88242" data-name="Warm Amber" style="background-color: #C88242;" title="Warm Amber"></button>
+          </div>
+        </div>
+
+        <!-- Interactive Paint Wall Canvas -->
+        <div class="relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl border-4 border-white select-none cursor-ew-resize" id="paint-wall-container">
+          
+          <!-- Background: Raw Unpainted Weathered Concrete Wall -->
+          <div class="absolute inset-0 bg-[#C8C2B7] flex items-center justify-center overflow-hidden">
+            <img src="${photo(imageFiles[9])}" alt="Raw weathered wall substrate" class="w-full h-full object-cover filter contrast-125 grayscale-[30%]">
+            <div class="absolute inset-0 bg-stone-900/20"></div>
+            <span class="absolute bottom-6 right-6 px-4 py-2 bg-[#261E1A]/85 text-white text-xs font-mono font-bold rounded-full uppercase tracking-wider backdrop-blur-md">
+              RAW UNPAINTED CONCRETE & PLASTER
+            </span>
+          </div>
+
+          <!-- Foreground: Smooth Freshly Painted Layer (Clipped to roller width) -->
+          <div class="absolute inset-y-0 left-0 overflow-hidden shadow-2xl transition-all" id="painted-layer" style="width: 50%; background-color: #C25E38;">
+            <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div class="absolute inset-0 paint-wet-sheen"></div>
+            
+            <div class="absolute inset-0 flex items-center justify-start p-8 md:p-12">
+              <div class="max-w-md text-white drop-shadow-md">
+                <span class="px-3 py-1 bg-white/20 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest rounded-full mb-3 inline-block" id="active-swatch-name">
+                  CAPE TERRACOTTA · 2ND COAT
+                </span>
+                <h3 class="font-editorial text-2xl md:text-4xl font-bold leading-tight">
+                  Handcrafted Smooth Finish
+                </h3>
+                <p class="text-xs md:text-sm text-white/90 mt-2 font-medium">
+                  Anti-fungal primer, crack sealing, and washable satin enamel rolled by master painters.
+                </p>
+              </div>
+            </div>
+
+            <span class="absolute bottom-6 left-6 px-4 py-2 bg-white/90 text-[#261E1A] text-xs font-bold rounded-full shadow-lg">
+              ✓ FRESH SILKY SATIN COAT
+            </span>
+          </div>
+
+          <!-- Paint Roller Draggable Tool on the Seam -->
+          <div class="absolute top-0 bottom-0 z-20 flex flex-col items-center justify-center pointer-events-none" id="paint-roller-handle" style="left: 50%; transform: translateX(-50%);">
+            <!-- Roller Frame & Sleeve -->
+            <div class="relative flex flex-col items-center">
+              <!-- Physical Paint Roller Head -->
+              <div class="w-10 h-32 md:h-44 rounded-lg shadow-2xl border-2 border-white/60 relative overflow-hidden transition-colors" id="physical-roller-sleeve" style="background-color: #C25E38;">
+                <div class="absolute inset-0 opacity-40 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(255,255,255,0.4)_6px,rgba(255,255,255,0.4)_12px)]"></div>
+              </div>
+              <!-- Metal Bracket & Wooden Handle -->
+              <div class="w-2 h-14 bg-neutral-400 border border-neutral-600 -mt-1 shadow-md"></div>
+              <div class="w-5 h-16 bg-[#8B5A2B] rounded-full border border-[#5C3A1E] shadow-xl flex items-center justify-center text-white text-[9px] font-mono">
+                ↔
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Roller Controls & Live Readout -->
+        <div class="mt-6 flex flex-wrap items-center justify-between gap-4 p-4 bg-[#EFE8DA] rounded-2xl border border-[#261E1A]/10 text-xs">
+          <div class="flex items-center gap-3">
+            <span class="w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></span>
+            <span class="font-semibold text-[#4A3E37]">
+              Surface Coverage: <strong id="paint-coverage-val" class="font-bold text-[#261E1A] text-sm font-mono">50%</strong>
+            </span>
+            <span class="text-neutral-400">•</span>
+            <span class="text-[#6B5E55]">Drag roller or click wall to paint</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button type="button" id="auto-paint-btn" class="px-5 py-2.5 bg-love-clay text-white font-bold rounded-full hover:bg-[#a94f2b] transition shadow-md">
+              🎨 Auto-Paint Full Wall
+            </button>
+            <button type="button" id="reset-paint-btn" class="px-4 py-2.5 border border-[#261E1A]/20 hover:bg-[#261E1A]/5 rounded-full font-bold transition">
+              Reset Wall
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
+// --- 12D. DESIGN 3 SPECIAL: HYDRAULIC MAIN LINE & PRESSURE CIRCUIT ---
+function renderPlumbingPipesSection() {
+  return `
+    <section class="py-16 md:py-24 px-5 md:px-10 bg-[#0B1320] text-white border-y border-slate-800 blueprint-grid-dark overflow-hidden" id="plumbing-pipes-section">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div class="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[.25em] text-emerald-400 mb-3 font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              HYDRAULIC ENGINEERING · WATER MAINS & PRESSURE ROUTING
+            </div>
+            <h2 class="font-display text-3xl md:text-5xl font-black tracking-tight leading-tight">
+              Main Line Plumbing & <span class="text-love-sage">Pressure Circuit.</span>
+            </h2>
+            <p class="mt-3 text-sm md:text-base text-slate-300 leading-relaxed max-w-2xl">
+              Turn the high-pressure brass valves below to connect the municipal water feed to residential lines. Experience live hydraulic pressure buildup, flowing water animations, and leak verification.
+            </p>
+          </div>
+
+          <!-- Hydraulic Live Instrumentation Panel -->
+          <div class="p-4 bg-slate-900 border border-slate-700 rounded-lg flex items-center gap-6 font-mono text-xs shrink-0 shadow-xl">
+            <div>
+              <span class="text-[9px] uppercase tracking-widest text-slate-400 block">SYSTEM PSI</span>
+              <strong id="hydraulic-psi" class="text-2xl font-black text-emerald-400 block font-mono">0 PSI</strong>
+            </div>
+            <div class="h-8 w-px bg-slate-700"></div>
+            <div>
+              <span class="text-[9px] uppercase tracking-widest text-slate-400 block">DELIVERY FLOW</span>
+              <strong id="hydraulic-flow" class="text-lg font-bold text-sky-400 block font-mono">0.0 L/min</strong>
+            </div>
+            <div class="h-8 w-px bg-slate-700"></div>
+            <div>
+              <span class="text-[9px] uppercase tracking-widest text-slate-400 block">STATUS</span>
+              <span id="hydraulic-status" class="px-2 py-0.5 bg-red-950 text-red-400 border border-red-500/30 text-[10px] font-bold rounded">CLOSED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Pipework Schematic Grid -->
+        <div class="p-6 sm:p-10 bg-slate-950/90 border-2 border-slate-700 rounded-xl relative shadow-2xl overflow-x-auto">
+          
+          <div class="min-w-[650px] space-y-8">
+            
+            <!-- Main Inflow Header -->
+            <div class="flex items-center justify-between pb-6 border-b border-slate-800">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded bg-sky-950 border border-sky-500/40 text-sky-400 grid place-items-center font-mono font-bold text-xs">
+                  IN
+                </span>
+                <div>
+                  <h4 class="font-mono text-xs font-bold uppercase text-white tracking-wider">
+                    Philip Municipal Main Water Feed (3.2 Bar)
+                  </h4>
+                  <span class="text-[10px] font-mono text-emerald-400">Class 12 High-Pressure Inflow Ready</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="surge-test-btn" class="px-3.5 py-1.5 bg-sky-950 hover:bg-sky-900 text-sky-400 border border-sky-500/40 font-mono text-[11px] font-bold rounded transition">
+                  ⚡ Run Pressure Stress Test
+                </button>
+                <button type="button" id="toggle-all-valves-btn" class="px-3.5 py-1.5 bg-emerald-950 hover:bg-emerald-900 text-emerald-400 border border-emerald-500/40 font-mono text-[11px] font-bold rounded transition">
+                  💧 Open All Lines
+                </button>
+              </div>
+            </div>
+
+            <!-- 3 Branch Pipe Lines with Valves -->
+            <div class="space-y-6">
+              
+              <!-- Branch 1: Kitchen Geyser -->
+              <div class="pipe-branch-row flex items-center justify-between gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-lg hover:border-slate-700 transition" data-branch="0">
+                <div class="flex items-center gap-4 w-64">
+                  <!-- Valve Button -->
+                  <button type="button" class="valve-toggle-btn w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 border-2 border-amber-300 text-black font-black grid place-items-center shadow-lg transition-transform duration-300 transform" title="Click to turn valve">
+                    <svg class="w-6 h-6 valve-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+                  </button>
+                  <div>
+                    <span class="font-mono text-[10px] text-slate-400 block uppercase">VALVE 01</span>
+                    <strong class="font-bold text-xs text-white">Kitchen & Geyser Line</strong>
+                  </div>
+                </div>
+
+                <!-- Animated SVG Pipe Line -->
+                <div class="flex-1 h-6 relative flex items-center">
+                  <svg class="w-full h-4" preserveAspectRatio="none">
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-base-line" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-water-line animate-pipe-flow" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" style="display:none;"/>
+                  </svg>
+                </div>
+
+                <!-- Appliance Box -->
+                <div class="appliance-status-box w-52 p-3 bg-slate-950 border border-slate-800 rounded text-right font-mono text-xs">
+                  <span class="block text-[10px] text-slate-400 uppercase">GEYSER STATUS</span>
+                  <strong class="appliance-label text-slate-500 font-bold">STANDBY · 0 PSI</strong>
+                </div>
+              </div>
+
+              <!-- Branch 2: Master Bathroom Suite -->
+              <div class="pipe-branch-row flex items-center justify-between gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-lg hover:border-slate-700 transition" data-branch="1">
+                <div class="flex items-center gap-4 w-64">
+                  <button type="button" class="valve-toggle-btn w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 border-2 border-amber-300 text-black font-black grid place-items-center shadow-lg transition-transform duration-300 transform" title="Click to turn valve">
+                    <svg class="w-6 h-6 valve-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+                  </button>
+                  <div>
+                    <span class="font-mono text-[10px] text-slate-400 block uppercase">VALVE 02</span>
+                    <strong class="font-bold text-xs text-white">Master Wet Room Suite</strong>
+                  </div>
+                </div>
+
+                <div class="flex-1 h-6 relative flex items-center">
+                  <svg class="w-full h-4" preserveAspectRatio="none">
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-base-line" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-water-line animate-pipe-flow" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" style="display:none;"/>
+                  </svg>
+                </div>
+
+                <div class="appliance-status-box w-52 p-3 bg-slate-950 border border-slate-800 rounded text-right font-mono text-xs">
+                  <span class="block text-[10px] text-slate-400 uppercase">SHOWER WET ROOM</span>
+                  <strong class="appliance-label text-slate-500 font-bold">STANDBY · 0 PSI</strong>
+                </div>
+              </div>
+
+              <!-- Branch 3: Pool & Outdoor Patio Loop -->
+              <div class="pipe-branch-row flex items-center justify-between gap-4 p-4 bg-slate-900/60 border border-slate-800 rounded-lg hover:border-slate-700 transition" data-branch="2">
+                <div class="flex items-center gap-4 w-64">
+                  <button type="button" class="valve-toggle-btn w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 border-2 border-amber-300 text-black font-black grid place-items-center shadow-lg transition-transform duration-300 transform" title="Click to turn valve">
+                    <svg class="w-6 h-6 valve-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+                  </button>
+                  <div>
+                    <span class="font-mono text-[10px] text-slate-400 block uppercase">VALVE 03</span>
+                    <strong class="font-bold text-xs text-white">Pool Filtration Loop</strong>
+                  </div>
+                </div>
+
+                <div class="flex-1 h-6 relative flex items-center">
+                  <svg class="w-full h-4" preserveAspectRatio="none">
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-base-line" stroke="#334155" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="0" y1="8" x2="100%" y2="8" class="pipe-water-line animate-pipe-flow" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" style="display:none;"/>
+                  </svg>
+                </div>
+
+                <div class="appliance-status-box w-52 p-3 bg-slate-950 border border-slate-800 rounded text-right font-mono text-xs">
+                  <span class="block text-[10px] text-slate-400 uppercase">POOL FILTRATION</span>
+                  <strong class="appliance-label text-slate-500 font-bold">STANDBY · 0 PSI</strong>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Footer Compliance Specs -->
+            <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-400">
+              <div class="flex items-center gap-4">
+                <span>🔧 Copper & Class 12 PEX</span>
+                <span>🛡️ Pressure Tested to 6.0 Bar</span>
+                <span class="text-emerald-400 font-bold">✓ 0% Pressure Loss Recorded</span>
+              </div>
+              <a href="contact.html?service=Plumbing" class="text-love-sage hover:underline font-bold inline-flex items-center gap-1">
+                Book Plumbing & Wet Room Installation ↗
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
 // --- 13. HOME PAGE BUILDER ---
 function renderHomePage() {
   const heroSection = designId === 'design-1'
@@ -1135,6 +1600,9 @@ function renderHomePage() {
 
   return `
     ${heroSection}
+    ${designId === 'design-1' ? renderHammerKnockoutSection() : ''}
+    ${designId === 'design-2' ? renderPaintRollerSection() : ''}
+    ${designId === 'design-3' ? renderPlumbingPipesSection() : ''}
     ${renderCompletedProjectsSection(false)}
     ${renderBeforeAfterSection()}
     ${designId === 'design-3' ? renderEstimatorWidget() : ''}
@@ -1144,6 +1612,7 @@ function renderHomePage() {
     ${renderCtaBanner()}
   `;
 }
+
 
 // --- 14. SERVICES PREVIEW SECTION ---
 function renderServicesPreview() {
@@ -1878,6 +2347,9 @@ function initSite() {
   wireEnquiryForm();
   wireLightbox();
   wireBlueprintToggle();
+  if (designId === 'design-1') wireHammerKnockout();
+  if (designId === 'design-2') wirePaintRoller();
+  if (designId === 'design-3') wirePlumbingPipes();
 }
 
 // --- 25. INTERACTIONS & EVENT LISTENERS ---
@@ -2200,6 +2672,352 @@ function wireBlueprintToggle() {
       label.textContent = isBlueprint ? 'Active CAD' : 'CAD Mode';
     }
   });
+}
+
+// H. Design 1: Sledgehammer Demolition & Post Knockout Wiring
+function wireHammerKnockout() {
+  const posts = document.querySelectorAll('.knock-post');
+  const hammer = document.querySelector('#sledgehammer-graphic');
+  const arena = document.querySelector('#demolition-arena');
+  const countEl = document.querySelector('#knock-count');
+  const percentEl = document.querySelector('#knock-percent');
+  const feedbackEl = document.querySelector('#impact-feedback');
+  const completeBanner = document.querySelector('#demolition-complete-banner');
+  const swingBtn = document.querySelector('#swing-hammer-btn');
+  const resetBtn = document.querySelector('#reset-posts-btn');
+  const rebuildBtn = document.querySelector('#rebuild-btn');
+  const postsContainer = document.querySelector('#posts-container');
+
+  if (!posts.length || !arena) return;
+
+  let knockedCount = 0;
+  const postHps = [100, 100, 100];
+
+  const updateProgress = () => {
+    if (countEl) countEl.textContent = String(knockedCount);
+    if (percentEl) percentEl.textContent = `${Math.round((knockedCount / 3) * 100)}%`;
+    if (knockedCount >= 3) {
+      if (completeBanner) completeBanner.style.display = 'flex';
+      if (postsContainer) postsContainer.style.opacity = '0.15';
+    }
+  };
+
+  const showImpactSpark = (msg) => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = msg;
+    feedbackEl.style.opacity = '1';
+    feedbackEl.style.transform = 'translate(-50%, -10px) scale(1.1)';
+    setTimeout(() => {
+      feedbackEl.style.opacity = '0';
+      feedbackEl.style.transform = 'translate(-50%, 0) scale(1)';
+    }, 450);
+  };
+
+  const strikePost = (postEl, index) => {
+    if (postHps[index] <= 0) return;
+
+    // Sledgehammer swing animation
+    if (hammer) {
+      hammer.classList.remove('animate-hammer-strike');
+      void hammer.offsetWidth;
+      hammer.classList.add('animate-hammer-strike');
+    }
+
+    // Screen shake
+    arena.classList.remove('animate-screen-shake');
+    void arena.offsetWidth;
+    arena.classList.add('animate-screen-shake');
+
+    postHps[index] -= 50;
+
+    const hpBar = postEl.querySelector('.post-hp-bar');
+    const hpText = postEl.querySelector('.post-hp-text');
+    const cracks = postEl.querySelector('.post-cracks');
+
+    if (hpBar) hpBar.style.width = `${postHps[index]}%`;
+    if (hpText) hpText.textContent = `${postHps[index]}% HP`;
+
+    if (postHps[index] === 50) {
+      showImpactSpark('💥 CRACK! -50% INTEGRITY');
+      if (cracks) cracks.style.opacity = '1';
+      postEl.style.transform = 'scale(0.98)';
+    } else if (postHps[index] <= 0) {
+      showImpactSpark('💥 DEMOLISHED! POST CRUMBLED');
+      knockedCount++;
+      postEl.style.transform = 'translateY(60px) scale(0.8)';
+      postEl.style.opacity = '0';
+      postEl.style.pointerEvents = 'none';
+      if (hpText) {
+        hpText.textContent = '0% KNOCKED';
+        hpText.className = 'post-hp-text text-red-500 font-bold';
+      }
+      updateProgress();
+    }
+  };
+
+  posts.forEach((post, idx) => {
+    post.addEventListener('click', () => {
+      strikePost(post, idx);
+    });
+  });
+
+  if (swingBtn) {
+    swingBtn.addEventListener('click', () => {
+      const targetIdx = postHps.findIndex(hp => hp > 0);
+      if (targetIdx !== -1) {
+        strikePost(posts[targetIdx], targetIdx);
+      } else {
+        showImpactSpark('ALL POSTS ALREADY DEMOLISHED!');
+      }
+    });
+  }
+
+  const resetAllPosts = () => {
+    knockedCount = 0;
+    postHps.fill(100);
+    if (completeBanner) completeBanner.style.display = 'none';
+    if (postsContainer) postsContainer.style.opacity = '1';
+
+    posts.forEach(post => {
+      post.style.transform = '';
+      post.style.opacity = '1';
+      post.style.pointerEvents = 'auto';
+      const hpBar = post.querySelector('.post-hp-bar');
+      const hpText = post.querySelector('.post-hp-text');
+      const cracks = post.querySelector('.post-cracks');
+      if (hpBar) hpBar.style.width = '100%';
+      if (hpText) {
+        hpText.textContent = '100% HP';
+        hpText.className = 'post-hp-text text-amber-400 font-bold';
+      }
+      if (cracks) cracks.style.opacity = '0';
+    });
+
+    updateProgress();
+    showImpactSpark('POSTS REBUILT · READY TO DEMOLISH');
+  };
+
+  if (resetBtn) resetBtn.addEventListener('click', resetAllPosts);
+  if (rebuildBtn) rebuildBtn.addEventListener('click', resetAllPosts);
+}
+
+// I. Design 2: Artisan Paint Roller Wiring
+function wirePaintRoller() {
+  const container = document.querySelector('#paint-wall-container');
+  const layer = document.querySelector('#painted-layer');
+  const roller = document.querySelector('#paint-roller-handle');
+  const sleeve = document.querySelector('#physical-roller-sleeve');
+  const swatchBtns = document.querySelectorAll('.paint-swatch-btn');
+  const activeSwatchName = document.querySelector('#active-swatch-name');
+  const coverageVal = document.querySelector('#paint-coverage-val');
+  const autoPaintBtn = document.querySelector('#auto-paint-btn');
+  const resetPaintBtn = document.querySelector('#reset-paint-btn');
+
+  if (!container || !layer || !roller) return;
+
+  let isPainting = false;
+  let currentColor = '#C25E38';
+  let currentName = 'Cape Terracotta';
+
+  const updateRoller = (clientX) => {
+    const rect = container.getBoundingClientRect();
+    let posX = clientX - rect.left;
+    if (posX < 0) posX = 0;
+    if (posX > rect.width) posX = rect.width;
+
+    const percentage = Math.round((posX / rect.width) * 100);
+    layer.style.width = `${percentage}%`;
+    roller.style.left = `${percentage}%`;
+    if (coverageVal) coverageVal.textContent = `${percentage}%`;
+  };
+
+  container.addEventListener('mousedown', (e) => {
+    isPainting = true;
+    updateRoller(e.clientX);
+  });
+  window.addEventListener('mouseup', () => { isPainting = false; });
+  window.addEventListener('mousemove', (e) => {
+    if (isPainting) updateRoller(e.clientX);
+  });
+
+  // Touch on mobile
+  container.addEventListener('touchstart', (e) => {
+    isPainting = true;
+    updateRoller(e.touches[0].clientX);
+  }, { passive: true });
+  window.addEventListener('touchend', () => { isPainting = false; });
+  window.addEventListener('touchmove', (e) => {
+    if (isPainting) updateRoller(e.touches[0].clientX);
+  }, { passive: true });
+
+  // Swatch Buttons
+  swatchBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      swatchBtns.forEach(b => b.classList.remove('ring-2', 'ring-love-clay', 'active-swatch'));
+      btn.classList.add('ring-2', 'ring-love-clay', 'active-swatch');
+
+      currentColor = btn.dataset.color;
+      currentName = btn.dataset.name;
+
+      layer.style.backgroundColor = currentColor;
+      if (sleeve) sleeve.style.backgroundColor = currentColor;
+      if (activeSwatchName) activeSwatchName.textContent = `${currentName.toUpperCase()} · 2ND COAT`;
+    });
+  });
+
+  // Auto Paint Animation
+  if (autoPaintBtn) {
+    autoPaintBtn.addEventListener('click', () => {
+      let cur = parseFloat(layer.style.width) || 50;
+      const step = () => {
+        if (cur < 100) {
+          cur += 2;
+          layer.style.width = `${cur}%`;
+          roller.style.left = `${cur}%`;
+          if (coverageVal) coverageVal.textContent = `${Math.min(100, Math.round(cur))}%`;
+          requestAnimationFrame(step);
+        }
+      };
+      step();
+    });
+  }
+
+  // Reset Paint
+  if (resetPaintBtn) {
+    resetPaintBtn.addEventListener('click', () => {
+      layer.style.width = '15%';
+      roller.style.left = '15%';
+      if (coverageVal) coverageVal.textContent = '15%';
+    });
+  }
+}
+
+// J. Design 3: Hydraulic Pipes Circuit Wiring
+function wirePlumbingPipes() {
+  const rows = document.querySelectorAll('.pipe-branch-row');
+  const psiEl = document.querySelector('#hydraulic-psi');
+  const flowEl = document.querySelector('#hydraulic-flow');
+  const statusEl = document.querySelector('#hydraulic-status');
+  const surgeBtn = document.querySelector('#surge-test-btn');
+  const toggleAllBtn = document.querySelector('#toggle-all-valves-btn');
+
+  if (!rows.length) return;
+
+  const branchStates = [false, false, false];
+  const flows = [9.5, 11.2, 7.8];
+
+  const updateHydraulics = () => {
+    const activeCount = branchStates.filter(Boolean).length;
+    let totalFlow = 0;
+    branchStates.forEach((isOpen, i) => {
+      if (isOpen) totalFlow += flows[i];
+    });
+
+    const psiMap = [0, 24, 48, 64];
+    const psi = psiMap[activeCount];
+
+    if (psiEl) psiEl.textContent = `${psi} PSI`;
+    if (flowEl) flowEl.textContent = `${totalFlow.toFixed(1)} L/min`;
+
+    if (statusEl) {
+      if (activeCount === 0) {
+        statusEl.textContent = 'CLOSED';
+        statusEl.className = 'px-2 py-0.5 bg-red-950 text-red-400 border border-red-500/30 text-[10px] font-bold rounded';
+      } else if (activeCount === 3) {
+        statusEl.textContent = 'OPTIMAL FLOW';
+        statusEl.className = 'px-2 py-0.5 bg-emerald-950 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded';
+      } else {
+        statusEl.textContent = 'PARTIAL FLOW';
+        statusEl.className = 'px-2 py-0.5 bg-amber-950 text-amber-400 border border-amber-500/30 text-[10px] font-bold rounded';
+      }
+    }
+  };
+
+  rows.forEach((row, idx) => {
+    const valveBtn = row.querySelector('.valve-toggle-btn');
+    const waterLine = row.querySelector('.pipe-water-line');
+    const appLabel = row.querySelector('.appliance-label');
+
+    const toggleBranch = (forcedState) => {
+      const nextState = typeof forcedState === 'boolean' ? forcedState : !branchStates[idx];
+      branchStates[idx] = nextState;
+
+      if (nextState) {
+        valveBtn.style.transform = 'rotate(90deg)';
+        valveBtn.classList.remove('bg-amber-600');
+        valveBtn.classList.add('bg-emerald-500', 'border-emerald-300');
+        if (waterLine) waterLine.style.display = 'block';
+        if (appLabel) {
+          appLabel.textContent = `ACTIVE · 3.2 BAR · ${flows[idx]} L/min`;
+          appLabel.className = 'appliance-label text-emerald-400 font-bold';
+        }
+      } else {
+        valveBtn.style.transform = 'rotate(0deg)';
+        valveBtn.classList.remove('bg-emerald-500', 'border-emerald-300');
+        valveBtn.classList.add('bg-amber-600');
+        if (waterLine) waterLine.style.display = 'none';
+        if (appLabel) {
+          appLabel.textContent = 'STANDBY · 0 PSI';
+          appLabel.className = 'appliance-label text-slate-500 font-bold';
+        }
+      }
+      updateHydraulics();
+    };
+
+    if (valveBtn) valveBtn.addEventListener('click', () => toggleBranch());
+  });
+
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener('click', () => {
+      const allOpen = branchStates.every(Boolean);
+      rows.forEach((row, i) => {
+        const valveBtn = row.querySelector('.valve-toggle-btn');
+        const waterLine = row.querySelector('.pipe-water-line');
+        const appLabel = row.querySelector('.appliance-label');
+        branchStates[i] = !allOpen;
+
+        if (!allOpen) {
+          if (valveBtn) {
+            valveBtn.style.transform = 'rotate(90deg)';
+            valveBtn.className = 'valve-toggle-btn w-12 h-12 rounded-full bg-emerald-500 border-2 border-emerald-300 text-black font-black grid place-items-center shadow-lg transition-transform duration-300';
+          }
+          if (waterLine) waterLine.style.display = 'block';
+          if (appLabel) {
+            appLabel.textContent = `ACTIVE · 3.2 BAR · ${flows[i]} L/min`;
+            appLabel.className = 'appliance-label text-emerald-400 font-bold';
+          }
+        } else {
+          if (valveBtn) {
+            valveBtn.style.transform = 'rotate(0deg)';
+            valveBtn.className = 'valve-toggle-btn w-12 h-12 rounded-full bg-amber-600 border-2 border-amber-300 text-black font-black grid place-items-center shadow-lg transition-transform duration-300';
+          }
+          if (waterLine) waterLine.style.display = 'none';
+          if (appLabel) {
+            appLabel.textContent = 'STANDBY · 0 PSI';
+            appLabel.className = 'appliance-label text-slate-500 font-bold';
+          }
+        }
+      });
+      toggleAllBtn.textContent = allOpen ? '💧 Open All Lines' : '🚫 Shut All Lines';
+      updateHydraulics();
+    });
+  }
+
+  // Surge Stress Test
+  if (surgeBtn) {
+    surgeBtn.addEventListener('click', () => {
+      const originalPsi = psiEl ? psiEl.textContent : '0 PSI';
+      if (psiEl) psiEl.textContent = '85 PSI (SURGE)';
+      if (statusEl) {
+        statusEl.textContent = 'STRESS TESTING';
+        statusEl.className = 'px-2 py-0.5 bg-amber-950 text-amber-400 border border-amber-500/30 text-[10px] font-bold rounded animate-pulse';
+      }
+      setTimeout(() => {
+        updateHydraulics();
+        if (statusEl) statusEl.textContent = 'PASSED (0 LEAKS)';
+      }, 1400);
+    });
+  }
 }
 
 // --- 26. RUN SCRIPT ON LOAD ---
